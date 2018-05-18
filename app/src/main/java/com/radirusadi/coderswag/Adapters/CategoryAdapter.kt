@@ -17,20 +17,31 @@ class CategoryAdapter(context : Context, categories: List<Category>) : BaseAdapt
 
     override fun getView(position: Int, converView: View?, parent: ViewGroup?): View {
         val categoryView: View
+        val holder: ViewHolder //use for recylce the list and optimitation
 
-        //initial category content
-        categoryView = LayoutInflater.from(context).inflate(R.layout.category_list_item, null)
-        val categoryImage: ImageView = categoryView.findViewById(R.id.categoryImage)
-        val categoryName: TextView = categoryView.findViewById(R.id.categoryName)
+        if (converView == null) {
+            //initial category content
+            categoryView = LayoutInflater.from(context).inflate(R.layout.category_list_item, null)
+            holder = ViewHolder()
+
+            holder.categoryImage = categoryView.findViewById(R.id.categoryImage)
+            holder.categoryName = categoryView.findViewById(R.id.categoryName)
+            categoryView.tag = holder
+        } else {
+            //if the converview already add and just use viewholder to recyle the view
+            holder = converView.tag as ViewHolder
+            categoryView = converView
+        }
+
+
 
         val category = categories[position]
         //get resource image from drawable
         val resouceId = context.resources.getIdentifier(category.image, "drawable", context.packageName)
 
-        categoryImage.setImageResource(resouceId)
-        categoryName.text = category.title
+        holder.categoryImage?.setImageResource(resouceId)
+        holder.categoryName?.text = category.title
 
-        println(resouceId)
         return categoryView
     }
 
@@ -44,6 +55,11 @@ class CategoryAdapter(context : Context, categories: List<Category>) : BaseAdapt
 
     override fun getCount(): Int {
         return categories.count()
+    }
+
+    private class ViewHolder {
+        var categoryImage: ImageView? = null
+        var categoryName: TextView? = null
     }
 
 }
